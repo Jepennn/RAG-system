@@ -10,7 +10,7 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState("");
 
   // --- 3. FUNKTIONEN FÖR ATT SKICKA ---
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputValue.trim()) return; // Skicka inget om det är tomt
 
     // Lägg till det nya meddelandet i listan
@@ -18,6 +18,11 @@ export default function Chat() {
 
     // Töm skrivrutan
     setInputValue("");
+
+    const response = await fetch("http://localhost:8000");
+    const data = await response.json();
+    console.log(data.reply);
+    setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
   };
 
   return (

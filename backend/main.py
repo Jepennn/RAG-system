@@ -1,23 +1,17 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-## Test route
-@app.post("/")
-async def read_root():
-    return {"message": "Hello World"}
+# Tillåt din frontend att prata med din backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Adressen till din Next.js-app
+    allow_credentials=True,
+    allow_methods=["*"], # Tillåt alla metoder (GET, POST etc.)
+    allow_headers=["*"],
+)
 
-
-## Files endpoints
-# @app.get("/files")
-# async def get_files():
-#     return {"files": "This is your files"}
-
-
-
-
-
-
-
-
-
+@app.get("/")
+async def chat():
+    return {"reply": "Hello world"}
