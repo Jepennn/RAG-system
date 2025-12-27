@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from google import genai
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+# The client gets the API key from the environment variable `GEMINI_API_KEY`.
+client = genai.Client()
 
 app = FastAPI()
 
@@ -16,6 +24,8 @@ app.add_middleware(
 class ChatMessage(BaseModel):
     text: str
 
+
+## Query endpoint
 @app.post("/")  # Vi ändrar till POST
 async def chat_endpoint(message: ChatMessage):      
     # Här kan du senare lägga in din AI-logik
@@ -23,3 +33,4 @@ async def chat_endpoint(message: ChatMessage):
     
     # Just nu skickar vi bara tillbaka ett svar som bevisar att vi läst texten
     return {"reply": f"RAGis har mottagit ditt meddelande: '{user_text}'"}
+
