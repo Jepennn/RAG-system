@@ -1,14 +1,18 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from google import genai
 from dotenv import load_dotenv
+from pinecone import Pinecone
+
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 load_dotenv()
 
-# The client gets the API key from the environment variable `GEMINI_API_KEY`.
-client = genai.Client()
+
+gemini_client = genai.Client()
 
 app = FastAPI()
 
@@ -21,27 +25,80 @@ app.add_middleware(
 )
 
 from fastapi import UploadFile, File
+# kan lägga till separators o length_function
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=50, chunk_overlap=5)
+
+EMBED_MODEL = "multilingual-e5-large"
+
+pc = Pinecone(api_key=os.getenv("PINCONE_API_KEY"))
+
+index = pc.Index("test-text-file")
 
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
-    # 1. Läs innehållet
-    content = await file.read()
-    print(content)
-    text = content.decode("utf-8") # Förutsatt att det är en .txt-fil
-    print(text)
-    return {"filename": file.filename, "status": "Text extraherad"}
 
-# Definiera vad vi förväntar oss att få från frontenden
+    content = await file.read()
+    text = content.decode("utf-8")
+    chunks = text_splitter.split_text(text)
+
+    embeddings = pc.inference.embed(
+        model = EMBED_MODEL,
+        inputs=chunks,
+        parameters={"input_type": "passage", "truncate": "END"}
+    )
+
+    vectors = []
+    for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
+        vectors.append({
+            "id": f"{file.filename}_{i}",
+            "values": emb.values,
+            "metadata": {"text": chunk, "filename": file.filename}
+        })
+
+    index.upsert(vectors=vectors)
+
+    return {"status": "Success", "chunks": len(chunks)}
+    
+
+
 class ChatMessage(BaseModel):
     text: str
 
 
-## Query endpoint
-@app.post("/")  # Vi ändrar till POST
+
+@app.post("/")
 async def chat_endpoint(message: ChatMessage):      
-    # Här kan du senare lägga in din AI-logik
-    user_text = message.text
+
+    query_embeddings = pc.inference.embed(
+        model = EMBED_MODEL,
+        inputs=message.text,
+        parameters={"input_type": "query"}
+    )
+
+    result = index.query(
+        vector=query_embeddings[0].values,
+        top_k=5,
+        include_metadata = True
+    )
+    print(result)
+
+    context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
+
+    prompt = f"""Använd kontexten nedan som bakgrund till ditt svar.
+    Om du inte kan komma fram till svaret från kontext-texten nedan, svara att du inte vet.
+    Kontext: {context}
+
+    Fråga: {message.text}
+    """
+
+    response = gemini_client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    print(response)
+
     
-    # Just nu skickar vi bara tillbaka ett svar som bevisar att vi läst texten
-    return {"reply": f"RAGis har mottagit ditt meddelande: '{user_text}'"}
+
+    return {"reply": response.text}
 

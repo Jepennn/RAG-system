@@ -22,7 +22,6 @@ export default function FilesPage() {
     setUploading(true);
     setMessage("");
 
-    // FormData krävs för att skicka filer till FastAPI
     const formData = new FormData();
     formData.append("file", file);
 
@@ -48,9 +47,7 @@ export default function FilesPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">
-        Ladda upp dokument till din RAG
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Upload documents to the bot</h1>
 
       <div className="border-2 border-dashed border-gray-300 p-10 rounded-lg text-center">
         <input
@@ -61,8 +58,8 @@ export default function FilesPage() {
 
         <p className="mt-2 text-gray-400">
           {file
-            ? `Vald fil: ${file.name}`
-            : "Ingen fil vald (endast .txt just nu)"}
+            ? `Select file: ${file.name}`
+            : "No file selected (only .txt for now)"}
         </p>
 
         <button
