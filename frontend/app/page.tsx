@@ -3,74 +3,87 @@
 import { useState } from "react";
 
 export default function Chat() {
-  // --- 1. MINNET ---
   const [messages, setMessages] = useState([
-    { role: "ai", text: "Hej! Vad vill du veta om din data?" },
+    { role: "ai", text: "Hej! Vad vill du veta?" },
   ]);
   const [inputValue, setInputValue] = useState("");
 
-  // --- 3. FUNKTIONEN FÖR ATT SKICKA ---
   const handleSend = async () => {
-    if (!inputValue.trim()) return; // Skicka inget om det är tomt
+    if (!inputValue.trim()) return;
 
-    // Lägg till det nya meddelandet i listan
-    setMessages([...messages, { role: "user", text: inputValue }]);
-
-    // Töm skrivrutan
+    const userMessage = { role: "user", text: inputValue };
+    setMessages((prev) => [...prev, userMessage]);
+    const currentInput = inputValue; // Spara undan värdet innan vi tömmer det
     setInputValue("");
 
-    const response = await fetch("http://localhost:8000");
-    const data = await response.json();
-    console.log(data.reply);
-    setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
+    try {
+      const response = await fetch("http://localhost:8000", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: currentInput }), // Skickar datan till FastAPI
+      });
+
+      if (!response.ok) throw new Error("Serverfel");
+
+      const data = await response.json();
+      setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", text: "Kunde inte ansluta till RAGis-servern." },
+      ]);
+    }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 p-4">
-      <div className="flex-1 max-w-2xl w-full mx-auto bg-white flex flex-col shadow-sm">
-        <div className="p-4 border-b bg-gray-50">
-          <h2 className="font-bold text-gray-700">RAG Pipeline</h2>
-        </div>
-
-        {/* --- VISA MEDDELANDEN --- */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`p-2 px-4 rounded-lg ${
-                  msg.role === "user"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-800"
-                }`}
-              >
-                {msg.text}
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="flex flex-col h-screen bg-yellow-100 text-white font-sans antialiased">
+      {/* --- HEADER --- */}
+      <div className="flex p-4 bg-black/40 backdrop-blur-md sticky top-0 z-10 border-b border-white/10 justify-center">
+        <h2 className="font-semibold text-m tracking-tight text-black">
+          RAGis
+        </h2>
       </div>
 
-      <div className="max-w-2xl w-full mx-auto bg-white p-4 flex gap-2 border-t">
-        <input
-          type="text"
-          placeholder="Skriv din fråga..."
-          className="flex-1 border px-3 py-2 outline-none focus:border-blue-500"
-          // --- 2. KOPPLING TILL INPUT ---
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()} // Skicka med Enter
-        />
-        <button
-          onClick={handleSend}
-          className="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 cursor-pointer transition-colors"
-        >
-          Send
-        </button>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 w-full max-w-2xl mx-auto">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[80%] p-3 px-4 rounded-2xl text-[15px] leading-relaxed ${
+                msg.role === "user"
+                  ? "bg-blue-600 text-white rounded-tr-none"
+                  : "bg-zinc-800 text-zinc-100 rounded-tl-none"
+              }`}
+            >
+              {msg.text}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-4 pb-8 bg-yellow-100">
+        <div className="max-w-2xl w-full mx-auto flex gap-2 items-center bg-yellow-50 border border-white/10 p-1.5 pl-4 rounded-full focus-within:border-white/20 transition-all shadow-[5px_5px_0px_0px_rgba(0,0,255,1)]">
+          <input
+            type="text"
+            placeholder="Fråga något..."
+            className="flex-1 text-black bg-transparent py-2 outline-none text-[15px] placeholder:text-zinc-500"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          />
+          <button
+            onClick={handleSend}
+            className="bg-zinc-800 text-white h-8 w-8 flex items-center justify-center rounded-full hover:bg-zinc-200 transition-colors cursor-pointer"
+          >
+            <span className="text-xl mb-0.5">↑</span>
+          </button>
+        </div>
       </div>
     </div>
   );
