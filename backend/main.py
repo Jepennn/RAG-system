@@ -20,6 +20,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi import UploadFile, File
+
+@app.post("/upload")
+async def upload_document(file: UploadFile = File(...)):
+    # 1. Läs innehållet
+    content = await file.read()
+    print(content)
+    text = content.decode("utf-8") # Förutsatt att det är en .txt-fil
+    print(text)
+    return {"filename": file.filename, "status": "Text extraherad"}
+
 # Definiera vad vi förväntar oss att få från frontenden
 class ChatMessage(BaseModel):
     text: str
