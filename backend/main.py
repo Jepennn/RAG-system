@@ -26,7 +26,7 @@ app.add_middleware(
 
 from fastapi import UploadFile, File
 # kan lägga till separators o length_function
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=50, chunk_overlap=5)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
 EMBED_MODEL = "multilingual-e5-large"
 

@@ -1,6 +1,14 @@
 "use client";
 
-import { MessageSquare, FileUp, HomeIcon, SettingsIcon, Bot } from "lucide-react";
+import FilesPage from "@/components/upload";
+
+import {
+  MessageSquare,
+  FileUp,
+  HomeIcon,
+  SettingsIcon,
+  Bot,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -14,6 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  useSidebar,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 // Menu items.
@@ -23,27 +33,19 @@ const items = [
     url: "/",
     icon: MessageSquare,
   },
-  {
-    title: "Files",
-    url: "/files",
-    icon: FileUp,
-  },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
 
+  const state = useSidebar();
+  console.log(state.open);
+
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar variant="floating" className="bg-zinc-900" collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <Bot className="size-4" />
-          </div>
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold">RAGis</span>
-            <span className="text-xs text-sidebar-foreground/70">AI Assistent</span>
-          </div>
+        <div className="flex items-center justify-between">
+          <SidebarTrigger />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -64,6 +66,14 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {state.open && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Upload</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <FilesPage></FilesPage>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
     </Sidebar>
   );

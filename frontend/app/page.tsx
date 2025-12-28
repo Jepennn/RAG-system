@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-
-import { CircleArrowRight } from "lucide-react";
+import { Bot } from "lucide-react";
 
 export default function Chat() {
   const [messages, setMessages] = useState([
@@ -43,18 +41,14 @@ export default function Chat() {
   return (
     <div className="flex flex-col h-screen bg-zinc-900 text-white font-sans antialiased">
       {/* --- HEADER --- */}
-      <div className="relative flex justify-center items-center p-4 bg-zinc-950 backdrop-blur-md sticky top-0 z-10 border-b border-white/10">
-        <h2 className="font-semibold text-lg tracking-thickest text-white">
-          R A G
-        </h2>
-
-        <Link
-          href="/files"
-          className="absolute right-6 flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors group"
-        >
-          <span>Files</span>
-          <CircleArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-        </Link>
+      <div className="flex items-center gap-2 px-2 py-2 justify-center">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          <Bot className="size-4" />
+        </div>
+        <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+          <span className="text-sm font-semibold">RAGis</span>
+          <span className="text-xs">AI Assistent</span>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 w-full max-w-2xl mx-auto">
