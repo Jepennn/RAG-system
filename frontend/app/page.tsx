@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+
+import { CircleArrowRight } from "lucide-react";
 
 export default function Chat() {
-  const [messages, setMessages] = useState([{ role: "ai", text: "Hej! Vad vill du veta?" }]);
+  const [messages, setMessages] = useState([
+    { role: "ai", text: "What would you like to know?" },
+  ]);
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = async () => {
@@ -36,12 +41,29 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-yellow-100 text-white font-sans antialiased">
+    <div className="flex flex-col h-screen bg-zinc-900 text-white font-sans antialiased">
+      {/* --- HEADER --- */}
+      <div className="relative flex justify-center items-center p-4 bg-zinc-950 backdrop-blur-md sticky top-0 z-10 border-b border-white/10">
+        <h2 className="font-semibold text-lg tracking-thickest text-white">
+          R A G
+        </h2>
+
+        <Link
+          href="/files"
+          className="absolute right-6 flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors group"
+        >
+          <span>Files</span>
+          <CircleArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4 w-full max-w-2xl mx-auto">
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
           >
             <div
               className={`max-w-[80%] p-3 px-4 rounded-2xl text-[15px] leading-relaxed ${
@@ -56,19 +78,19 @@ export default function Chat() {
         ))}
       </div>
 
-      <div className="p-4 pb-8 bg-yellow-100">
-        <div className="max-w-2xl w-full mx-auto flex gap-2 items-center bg-yellow-50 border border-white/10 p-1.5 pl-4 rounded-full focus-within:border-white/20 transition-all shadow-[5px_5px_0px_0px_rgba(0,0,255,1)]">
+      <div className="p-4 pb-8 bg-zinc-900">
+        <div className="pr-4 h-15 max-w-2xl w-full mx-auto flex gap-2 items-center bg-zinc-950 border border-white/10 p-1.5 pl-4 rounded-full focus-within:border-white/20 transition-all">
           <input
             type="text"
-            placeholder="Fråga något..."
-            className="flex-1 text-black bg-transparent py-2 outline-none text-[15px] placeholder:text-zinc-500"
+            placeholder="Ask something..."
+            className="flex-1 text-white bg-transparent py-2 outline-none text-[15px] placeholder:text-zinc-500"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
           <button
             onClick={handleSend}
-            className="bg-zinc-800 text-white h-8 w-8 flex items-center justify-center rounded-full hover:bg-zinc-200 transition-colors cursor-pointer"
+            className="bg-zinc-100 text-black h-8 w-8 flex items-center justify-center rounded-full hover:bg-zinc-200 transition-colors cursor-pointer"
           >
             <span className="text-xl mb-0.5">↑</span>
           </button>
