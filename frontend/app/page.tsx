@@ -3,9 +3,7 @@
 import { useState } from "react";
 
 export default function Chat() {
-  const [messages, setMessages] = useState([
-    { role: "ai", text: "Hej! Vad vill du veta?" },
-  ]);
+  const [messages, setMessages] = useState([{ role: "ai", text: "Hej! Vad vill du veta?" }]);
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = async () => {
@@ -38,21 +36,12 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-yellow-100 text-white font-sans antialiased">
-      {/* --- HEADER --- */}
-      <div className="flex p-4 bg-black/40 backdrop-blur-md sticky top-0 z-10 border-b border-white/10 justify-center">
-        <h2 className="font-semibold text-m tracking-tight text-black">
-          RAGis
-        </h2>
-      </div>
-
+    <div className="flex flex-col h-full bg-yellow-100 text-white font-sans antialiased">
       <div className="flex-1 overflow-y-auto p-4 space-y-4 w-full max-w-2xl mx-auto">
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex ${
-              msg.role === "user" ? "justify-end" : "justify-start"
-            }`}
+            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`max-w-[80%] p-3 px-4 rounded-2xl text-[15px] leading-relaxed ${
