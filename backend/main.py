@@ -99,6 +99,28 @@ async def chat_endpoint(message: ChatMessage):
     print(response)
 
     
-
     return {"reply": response.text}
+
+# Deletes all files in the whole index
+@app.delete("/files")
+async def delete_all_files():
+    try:
+        index.delete(delete_all=True)
+        return {"status": "Success", "message": "All files deleted"}
+    except Exception as e:
+        print(e)
+        return {"status": "Error", "message": "Failed to delete all files"}
+
+
+
+
+# Deletes all chunks conntected to a specific file
+@app.delete("/files/{file_name}")
+async def delete_file(file_name: str):
+    try:
+        index.delete(delete_all=False, filter={"filename": file_name})
+        return {"status": "Success", "message": "File deleted"}
+    except Exception as e:
+        print(e)
+        return {"status": "Error", "message": "Failed to delete file"}
 
