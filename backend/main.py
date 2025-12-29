@@ -67,7 +67,7 @@ class ChatMessage(BaseModel):
 
 
 @app.post("/")
-async def chat_endpoint(message: ChatMessage):      
+async def chat_endpoint(message: ChatMessage):  
 
     query_embeddings = pc.inference.embed(
         model = EMBED_MODEL,
@@ -86,6 +86,7 @@ async def chat_endpoint(message: ChatMessage):
 
     prompt = f"""Använd kontexten nedan som bakgrund till ditt svar.
     Om du inte kan komma fram till svaret från kontext-texten nedan, svara att du inte vet.
+    Om vardagligt prat kommer in, typ hej osv, hälsa vänligt och påminn om att du kan hjälpa till med filer användaren anger.
     Kontext: {context}
 
     Fråga: {message.text}
@@ -99,8 +100,25 @@ async def chat_endpoint(message: ChatMessage):
     print(response)
 
     
+
     return {"reply": response.text}
 
+@app.get("/files")
+async def get_files():
+    try:
+        filenames = set()
+    
+        for ids in index.list():
+            for vector_id in ids:
+                filename = vector_id.rsplit("_", 1)[0]
+                filenames.add(filename)
+        
+
+        return {"files": sorted(list(filenames))}
+    except Exception as e:
+        print(f"Error listing files: {e}")
+        return {"files": [], "error": str(e)}
+    
 # Deletes all files in the whole index
 @app.delete("/files")
 async def delete_all_files():

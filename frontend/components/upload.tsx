@@ -83,7 +83,7 @@ export default function Upload() {
           className={`w-full max-w-lg border-2 border-dashed p-12 rounded-xl text-center transition-all cursor-pointer ${
             isDragging
               ? "border-blue-500 bg-blue-500/10"
-              : "border-zinc-300 hover:bg-zinc-100"
+              : "border-zinc-300 hover:bg-zinc-800"
           }`}
         >
           {/* NYTT: Inputen är nu gömd men triggas av boxen ovan */}
@@ -96,13 +96,13 @@ export default function Upload() {
           />
 
           <div className="space-y-4">
-            <p className="text-black">
+            <p className="text-white">
               {file ? (
                 <span className="text-blue-400 font-medium italic">
                   Vald fil: {file.name}
                 </span>
               ) : (
-                "Dra och släpp din .txt fil här, eller klicka för att bläddra"
+                "Release a .txt file here, or click to select"
               )}
             </p>
           </div>

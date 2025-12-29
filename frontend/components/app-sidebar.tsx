@@ -12,6 +12,8 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { FileList } from "./file-list";
+
 import {
   Sidebar,
   SidebarContent,
@@ -48,7 +50,7 @@ export function AppSidebar() {
           <SidebarTrigger />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="shadow-2xl shadow-black">
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -66,14 +68,18 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
         {state.open && (
-          <SidebarGroup>
+          <SidebarGroup className="overflow-hidden">
             <SidebarGroupLabel>Upload</SidebarGroupLabel>
             <SidebarGroupContent>
-              <FilesPage></FilesPage>
+              <div className="w-[220px]">
+                <FilesPage></FilesPage>
+              </div>
             </SidebarGroupContent>
           </SidebarGroup>
         )}
+        {state.open && <FileList />}
       </SidebarContent>
     </Sidebar>
   );

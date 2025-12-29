@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Bot } from "lucide-react";
+import { Bot, Loader2 } from "lucide-react";
 
 export default function Chat() {
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([
     { role: "ai", text: "What would you like to know?" },
   ]);
@@ -11,6 +12,8 @@ export default function Chat() {
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
+
+    setIsLoading(true);
 
     const userMessage = { role: "user", text: inputValue };
     setMessages((prev) => [...prev, userMessage]);
@@ -35,6 +38,8 @@ export default function Chat() {
         ...prev,
         { role: "ai", text: "Kunde inte ansluta till RAGis-servern." },
       ]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,7 +52,7 @@ export default function Chat() {
         </div>
         <div className="flex flex-col group-data-[collapsible=icon]:hidden">
           <span className="text-sm font-semibold">RAGis</span>
-          <span className="text-xs">AI Assistent</span>
+          <span className="text-xs">RAG AI Assistent</span>
         </div>
       </div>
 
@@ -70,6 +75,13 @@ export default function Chat() {
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-zinc-800 text-zinc-100 p-3 px-4 rounded-2xl rounded-tl-none flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="p-4 pb-8 bg-zinc-900">
@@ -84,9 +96,14 @@ export default function Chat() {
           />
           <button
             onClick={handleSend}
+            disabled={isLoading || !inputValue.trim()}
             className="bg-zinc-100 text-black h-8 w-8 flex items-center justify-center rounded-full hover:bg-zinc-200 transition-colors cursor-pointer"
           >
-            <span className="text-xl mb-0.5">↑</span>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-black" />
+            ) : (
+              <span className="text-xl mb-0.5">↑</span>
+            )}
           </button>
         </div>
       </div>
