@@ -17,7 +17,7 @@ export default function Chat() {
 
     const userMessage = { role: "user", text: inputValue };
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = inputValue; // Spara undan värdet innan vi tömmer det
+    const currentInput = inputValue;
     setInputValue("");
 
     try {
@@ -26,7 +26,7 @@ export default function Chat() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: currentInput }), // Skickar datan till FastAPI
+        body: JSON.stringify({ text: currentInput }),
       });
 
       if (!response.ok) throw new Error("Serverfel");

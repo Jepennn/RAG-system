@@ -22,7 +22,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-// Menu items.
 const items = [
   {
     title: "Chat",
