@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import {
   SidebarProvider,
@@ -39,6 +40,7 @@ export default function RootLayout({
             <main className="flex-1 overflow-auto">{children}</main>
           </SidebarInset>
         </SidebarProvider>
+        <Toaster />
       </body>
     </html>
   );

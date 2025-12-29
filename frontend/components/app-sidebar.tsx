@@ -2,13 +2,7 @@
 
 import FilesPage from "@/components/upload";
 
-import {
-  MessageSquare,
-  FileUp,
-  HomeIcon,
-  SettingsIcon,
-  Bot,
-} from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

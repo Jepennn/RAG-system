@@ -2,11 +2,11 @@
 
 import { useState, useRef } from "react"; // NYTT: lade till useRef
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
 
   // --- NYTT: State för att veta om man drar en fil över boxen ---
   const [isDragging, setIsDragging] = useState(false);
@@ -46,7 +46,6 @@ export default function Upload() {
     }
 
     setUploading(true);
-    setMessage("");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -59,13 +58,13 @@ export default function Upload() {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage(`Success: ${data.filename} uploaded!`);
+
+        window.location.reload();
       } else {
-        setMessage("Something went wrong...");
+        toast("Failed to upload...");
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("Could not connect to the server...");
     } finally {
       setUploading(false);
     }
@@ -113,7 +112,7 @@ export default function Upload() {
               uploadFile();
             }}
             disabled={!file || uploading}
-            className={`mt-6 px-4 py-3 rounded-md text-white font-semibold transition-all ${
+            className={`mt-6 px-4 py-3 rounded-md text-white font-semibold transition-all cursor-pointer ${
               uploading || !file
                 ? "bg-zinc-700 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 active:scale-95"
@@ -123,20 +122,6 @@ export default function Upload() {
           </button>
         </div>
       </div>
-
-      {message && (
-        <div className="flex justify-center mt-6">
-          <p
-            className={`p-3 rounded-lg text-sm font-medium ${
-              message.includes("Success")
-                ? "bg-green-500/20 text-green-400 border border-green-500/20"
-                : "bg-red-500/20 text-red-400 border border-red-500/20"
-            }`}
-          >
-            {message}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

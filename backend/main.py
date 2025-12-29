@@ -132,13 +132,35 @@ async def delete_all_files():
 
 
 
-# Deletes all chunks conntected to a specific file
+from fastapi import HTTPException
+
 @app.delete("/files/{file_name}")
 async def delete_file(file_name: str):
     try:
-        index.delete(delete_all=False, filter={"filename": file_name})
-        return {"status": "Success", "message": "File deleted"}
+        # 1. Hitta alla ID:n som börjar med filnamnet (t.ex. "shortest.txt_0", "shortest.txt_1")
+        # Vi använder index.list med prefix, vilket är väldigt effektivt.
+        ids_to_delete = []
+        for ids in index.list(prefix=f"{file_name}_"):
+            ids_to_delete.extend(ids)
+
+        # 2. Om listan är tom, hittades ingen fil
+        if not ids_to_delete:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Hittade inga vektorer för filen '{file_name}'"
+            )
+
+        # 3. Radera vektorerna baserat på deras specifika ID:n
+        index.delete(ids=ids_to_delete)
+        
+        return {
+            "status": "Success", 
+            "message": f"Raderade {len(ids_to_delete)} bitar av filen '{file_name}'"
+        }
+
+    except HTTPException as he:
+        raise he
     except Exception as e:
-        print(e)
-        return {"status": "Error", "message": "Failed to delete file"}
+        print(f"Delete error: {e}")
+        return {"status": "Error", "message": str(e)}
 
