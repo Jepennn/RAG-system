@@ -30,9 +30,9 @@ export function FileList() {
   async function handleDelete(file: string) {
     try {
       await dispatch(deleteFile(file)).unwrap();
-      toast.success(`${file} borttagen`);
+      toast.success(`${file} removed`);
     } catch (error) {
-      toast.error("Misslyckades att ta bort filen");
+      toast.error("Failed to delete file");
     }
   }
 

@@ -1,11 +1,13 @@
 // lib/store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import filesReducer from "./slices/filesSlice";
+import chatReducer from "./slices/chatSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       files: filesReducer,
+      chat: chatReducer,
     },
   });
 };
