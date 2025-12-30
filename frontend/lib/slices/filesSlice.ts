@@ -1,23 +1,27 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface FilesState {
   items: string[];
   loading: boolean;
   error: string | null;
+  uploading: boolean;
 }
 
 const initialState: FilesState = {
   items: [],
   loading: false,
   error: null,
+  uploading: false,
 };
 
+//Thunk to fetchfiles
 export const fetchFiles = createAsyncThunk("files/fetchFiles", async () => {
   const response = await fetch("http://localhost:8000/files");
   const data = await response.json();
   return data.files || [];
 });
 
+//Thunk to delete a specfic file
 export const deleteFile = createAsyncThunk(
   "files/deleteFile",
   async (fileName: string) => {
@@ -29,6 +33,7 @@ export const deleteFile = createAsyncThunk(
   }
 );
 
+//Thunk to delete al files
 export const deleteAllFiles = createAsyncThunk(
   "files/deleteAllFiles",
   async () => {
@@ -43,7 +48,11 @@ export const deleteAllFiles = createAsyncThunk(
 const filesSlice = createSlice({
   name: "files",
   initialState,
-  reducers: {},
+  reducers: {
+    addFile: (state, action: PayloadAction<string>) => {
+      state.items.push(action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch Files
@@ -69,4 +78,5 @@ const filesSlice = createSlice({
   },
 });
 
+export const { addFile } = filesSlice.actions;
 export default filesSlice.reducer;

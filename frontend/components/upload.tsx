@@ -4,9 +4,15 @@ import { useState, useRef } from "react"; // NYTT: lade till useRef
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store";
+import { addFile } from "@/lib/slices/filesSlice";
+
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
 
   // --- NYTT: State för att veta om man drar en fil över boxen ---
   const [isDragging, setIsDragging] = useState(false);
@@ -58,8 +64,9 @@ export default function Upload() {
 
       if (response.ok) {
         const data = await response.json();
-
-        window.location.reload();
+        dispatch(addFile(data.name));
+        setFile(null);
+        toast.success(`${data.name} uploaded!`);
       } else {
         toast("Failed to upload...");
       }
