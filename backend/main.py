@@ -93,9 +93,6 @@ async def chat_endpoint(query: ChatMessage):
             include_metadata = True
         )
 
-
-    print(result)
-
     context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
 
     prompt = f"""
@@ -110,13 +107,12 @@ async def chat_endpoint(query: ChatMessage):
 
     Fråga: {query.text}
     """
+    print(prompt)
     
     response = gemini_client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
     )
-
-    print(response)
     return {"reply": response.text}
 
 
