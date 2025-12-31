@@ -2,7 +2,7 @@
 
 import FilesPage from "@/components/upload";
 
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Command } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -22,7 +22,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-// Menu items.
 const items = [
   {
     title: "Chat",
@@ -40,8 +39,13 @@ export function AppSidebar() {
   return (
     <Sidebar variant="floating" className="bg-zinc-900" collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <SidebarTrigger />
+          {state.open && (
+            <span className="flex gap-1 items-center w-8 text-zinc-400 text-sm">
+              <Command size={12} />B
+            </span>
+          )}
         </div>
       </SidebarHeader>
       <SidebarContent className="shadow-2xl shadow-black">

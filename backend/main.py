@@ -57,7 +57,7 @@ async def upload_document(file: UploadFile = File(...)):
 
     index.upsert(vectors=vectors)
 
-    return {"status": "Success", "chunks": len(chunks)}
+    return {"name": file.filename, "status": "Success", "chunks": len(chunks)}
     
 
 
@@ -80,24 +80,33 @@ async def chat_endpoint(message: ChatMessage):
         top_k=5,
         include_metadata = True
     )
-    print(result)
 
-    context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
 
-    prompt = f"""Använd kontexten nedan som bakgrund till ditt svar.
-    Om du inte kan komma fram till svaret från kontext-texten nedan, svara att du inte vet.
-    Om vardagligt prat kommer in, typ hej osv, hälsa vänligt och påminn om att du kan hjälpa till med filer användaren anger.
+    #context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
+    context = "\n-----------\n".join([f"Källa: {res.metadata['filename']}\nText: {res.metadata['text']}" for res in result.matches])
+
+    prompt = f"""
+    Detta är dina instruktioner:
+    -Använd den markerade kontexten nedan som bakgrund till dina svar. Om du inte kan svara med hjälp av kontexten, förklara det på ett vänligt sätt.
+    -Om användaren säger hej eller andra vardagliga fraser, svara vänligt.
+    -Du kan se i kontexten vilken källa den kommer ifrån. Du ska ange i dina svar vart du fick en viss information ifrån. 
+    -Du kan svara användaren vilka av användarens filer du har tillgång till. (Dessa är de som finns som källor i din kontext).
+    -Om kontext är tom, svara att du inte har några filer tillgängliga om användaren frågar om du har några filer.
+
     Kontext: {context}
 
     Fråga: {message.text}
     """
+
+    print("result matches:", result.matches)
+    print("kontext:", context)
 
     response = gemini_client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
     )
 
-    print(response)
+    
 
     
 

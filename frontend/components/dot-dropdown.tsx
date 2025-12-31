@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store";
+import { deleteAllFiles } from "@/lib/slices/filesSlice";
+import { toast } from "sonner";
 import { MoreHorizontalIcon } from "lucide-react";
 
 import {
@@ -8,23 +11,19 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 export function DropdownMenuDialog() {
-  function delete_all() {
-    fetch("http://localhost:8000/files", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        window.location.reload();
-      });
+  const dispatch = useDispatch<AppDispatch>();
+
+  async function handleDeleteAll() {
+    try {
+      await dispatch(deleteAllFiles()).unwrap();
+      toast.success("All files deleted");
+    } catch (error) {
+      toast.error("Failed deleting all files");
+    }
   }
 
   return (
@@ -35,7 +34,10 @@ export function DropdownMenuDialog() {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40" align="end">
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={delete_all} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={handleDeleteAll}
+              className="cursor-pointer"
+            >
               Delete all files
             </DropdownMenuItem>
           </DropdownMenuGroup>

@@ -1,7 +1,12 @@
 "use client";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/store";
+import { fetchFiles, deleteFile } from "@/lib/slices/filesSlice";
+import { DropdownMenuDialog } from "./dot-dropdown";
+
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { FileText, Loader2, Trash } from "lucide-react";
+import { FileText, Loader2, Trash, FileX } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,48 +15,44 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { DropdownMenuDialog } from "./dot-dropdown";
 
 export function FileList() {
-  const [files, setFiles] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { items: files, loading } = useSelector(
+    (state: RootState) => state.files
+  );
 
   useEffect(() => {
-    fetch("http://localhost:8000/files")
-      .then((res) => res.json())
-      .then((data) => {
-        setFiles(data.files || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    dispatch(fetchFiles());
+  }, [dispatch]);
 
   async function handleDelete(file: string) {
     try {
-      const response = await fetch(`http://localhost:8000/files/${file}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      if (!response.ok) {
-        toast("Failed to delete...");
-      } else {
-        window.location.reload();
-      }
+      await dispatch(deleteFile(file)).unwrap();
+      toast.success(`${file} removed`);
     } catch (error) {
-      toast("Failed to delete...");
+      toast.error("Failed to delete file");
     }
   }
 
-  if (loading)
+  if (loading && files.length === 0)
     return (
       <div className="p-4 flex justify-center">
         <Loader2 className="animate-spin h-4 w-4 text-zinc-500" />
       </div>
     );
-  if (files.length === 0) return null;
+
+  if (files.length === 0) {
+    return (
+      <div className="flex justify-center items-center">
+        <SidebarGroupLabel className="gap-2">
+          <FileX />
+          No uploaded files
+        </SidebarGroupLabel>
+      </div>
+    );
+  }
 
   return (
     <SidebarGroup className="animate-in fade-in duration-500">
@@ -64,8 +65,8 @@ export function FileList() {
           {files.map((file) => (
             <SidebarMenuItem key={file}>
               <SidebarMenuButton
-                className="py-0 h-8 hover:bg-transparent active:bg-transparent focus:bg-transparent data-[active=true]:bg-transparent"
-                asChild={true}
+                className="py-0 h-8 hover:bg-transparent"
+                asChild
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">

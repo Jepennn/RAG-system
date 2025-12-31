@@ -4,9 +4,15 @@ import { useState, useRef } from "react"; // NYTT: lade till useRef
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store";
+import { addFile } from "@/lib/slices/filesSlice";
+
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
 
   // --- NYTT: State för att veta om man drar en fil över boxen ---
   const [isDragging, setIsDragging] = useState(false);
@@ -58,8 +64,9 @@ export default function Upload() {
 
       if (response.ok) {
         const data = await response.json();
-
-        window.location.reload();
+        dispatch(addFile(data.name));
+        setFile(null);
+        toast.success(`${data.name} uploaded!`);
       } else {
         toast("Failed to upload...");
       }
@@ -97,8 +104,8 @@ export default function Upload() {
           <div className="space-y-4">
             <p className="text-white">
               {file ? (
-                <span className="text-blue-400 font-medium italic">
-                  Vald fil: {file.name}
+                <span className="text-blue-400 font-medium">
+                  File: {file.name}
                 </span>
               ) : (
                 "Release a .txt file here, or click to select"
@@ -106,20 +113,22 @@ export default function Upload() {
             </p>
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // Hindrar att "klicka på boxen" triggas när man klickar på knappen
-              uploadFile();
-            }}
-            disabled={!file || uploading}
-            className={`mt-6 px-4 py-3 rounded-md text-white font-semibold transition-all cursor-pointer ${
-              uploading || !file
-                ? "bg-zinc-700 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 active:scale-95"
-            }`}
-          >
-            {uploading ? "Uploading..." : "Upload now"}
-          </button>
+          {file && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Hindrar att "klicka på boxen" triggas när man klickar på knappen
+                uploadFile();
+              }}
+              disabled={!file || uploading}
+              className={`mt-6 px-4 py-3 rounded-2xl text-white font-semibold transition-all cursor-pointer ${
+                uploading || !file
+                  ? "bg-zinc-800 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-700 active:scale-95"
+              }`}
+            >
+              {uploading ? "Uploading..." : "Upload now"}
+            </button>
+          )}
         </div>
       </div>
     </div>
