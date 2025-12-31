@@ -61,29 +61,42 @@ async def upload_document(file: UploadFile = File(...)):
     
 
 
+
 class ChatMessage(BaseModel):
     text: str
-
+    file_names: list[str]  | None = None
 
 
 @app.post("/")
-async def chat_endpoint(message: ChatMessage):  
+async def chat_endpoint(query: ChatMessage):
 
     query_embeddings = pc.inference.embed(
         model = EMBED_MODEL,
-        inputs=message.text,
+        inputs=query.text,
         parameters={"input_type": "query"}
     )
 
-    result = index.query(
-        vector=query_embeddings[0].values,
-        top_k=5,
-        include_metadata = True
-    )
+    # Query from specfic files in pinecone
+    if (query.file_names):
+        result = index.query(
+            vector=query_embeddings[0].values,
+            top_k=5,
+            include_metadata = True,
+            filter={
+                "filename": {"$in": query.file_names}
+            }
+        )
+    else:
+        result = index.query(
+            vector=query_embeddings[0].values,
+            top_k=5,
+            include_metadata = True
+        )
 
 
-    #context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
-    context = "\n-----------\n".join([f"Källa: {res.metadata['filename']}\nText: {res.metadata['text']}" for res in result.matches])
+    print(result)
+
+    context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
 
     prompt = f"""
     Detta är dina instruktioner:
@@ -95,23 +108,19 @@ async def chat_endpoint(message: ChatMessage):
 
     Kontext: {context}
 
-    Fråga: {message.text}
+    Fråga: {query.text}
     """
-
-    print("result matches:", result.matches)
-    print("kontext:", context)
-
+    
     response = gemini_client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
     )
 
-    
-
-    
-
+    print(response)
     return {"reply": response.text}
 
+
+#
 @app.get("/files")
 async def get_files():
     try:
