@@ -20,7 +20,9 @@ import { addFileName } from "@/lib/slices/chatSlice";
 export function FileList() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { items: files, loading } = useSelector((state: RootState) => state.files);
+  const { items: files, loading } = useSelector(
+    (state: RootState) => state.files
+  );
   const { file_names } = useSelector((state: RootState) => state.chat);
 
   useEffect(() => {
@@ -73,7 +75,10 @@ export function FileList() {
         <SidebarMenu>
           {files.map((file) => (
             <SidebarMenuItem key={file}>
-              <SidebarMenuButton className="py-0 h-8 hover:bg-transparent active:bg-transparent active:text-current" asChild>
+              <SidebarMenuButton
+                className="py-0 h-8 hover:bg-transparent active:bg-transparent active:text-current"
+                asChild
+              >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">
                     <Plus
@@ -82,7 +87,9 @@ export function FileList() {
                       className="text-white cursor-pointer hover:text-blue-500 active:text-blue-500"
                     />
                     <FileText size={16} className=" text-zinc-500" />
-                    <span className="truncate text-xs text-zinc-400">{file}</span>
+                    <span className="truncate text-xs text-zinc-400 w-33">
+                      {file}
+                    </span>
                   </div>
                   <Trash
                     className="h-4 w-4 text-zinc-500 cursor-pointer hover:text-red-500 active:text-red-500"

@@ -115,15 +115,14 @@ async def chat_endpoint(query: ChatMessage):
             include_metadata = True
         )
 
-    context = "\n-----------\n".join([res.metadata["text"] for res in result.matches])
+    context = "\n-----------\n".join([f"Källa: {res.metadata['filename']}\nText: {res.metadata['text']}" for res in result.matches])
 
     prompt = f"""
     Detta är dina instruktioner:
     -Använd den markerade kontexten nedan som bakgrund till dina svar. Om du inte kan svara med hjälp av kontexten, förklara det på ett vänligt sätt.
     -Om användaren säger hej eller andra vardagliga fraser, svara vänligt.
-    -Du kan se i kontexten vilken källa den kommer ifrån. Du ska ange i dina svar vart du fick en viss information ifrån. 
-    -Du kan svara användaren vilka av användarens filer du har tillgång till. (Dessa är de som finns som källor i din kontext).
-    -Om kontext är tom, svara att du inte har några filer tillgängliga om användaren frågar om du har några filer.
+    -Du kan se i kontexten vilken källa den kommer ifrån. Du ska ange i dina svar vart du fick en viss information ifrån, skriv källan inom parenteser.
+    -Du ska ange vilken källa du fick informationen ifrån! Ange källan inom parenteser!
 
     Kontext: {context}
 
