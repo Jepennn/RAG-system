@@ -64,7 +64,7 @@ async def upload_document(file: UploadFile = File(...)):
 
 class ChatMessage(BaseModel):
     text: str
-    file_names: list[str]  | None = None
+    file_names: list[str]
 
 
 @app.post("/")
@@ -77,7 +77,7 @@ async def chat_endpoint(query: ChatMessage):
     )
 
     # Query from specfic files in pinecone
-    if (query.file_names):
+    if (query.file_names.length > 0):
         result = index.query(
             vector=query_embeddings[0].values,
             top_k=5,

@@ -5,26 +5,35 @@ interface Message {
   text: string;
 }
 
+interface SendMessagePayload {
+  text: string;
+  file_names: string[];
+}
+
 interface ChatState {
   messages: Message[];
   isLoading: boolean;
   error: string | null;
+  file_names: string[];
 }
 
 const initialState: ChatState = {
   messages: [{ role: "ai", text: "What would you like to know?" }],
   isLoading: false,
   error: null,
+  file_names: [],
 };
 
-export const sendMessage = createAsyncThunk<string, string>(
+export const sendMessage = createAsyncThunk<string, SendMessagePayload>(
   "chat/sendMessage",
-  async (text, { rejectWithValue }) => {
+  async ({ text, file_names }, { rejectWithValue }) => {
     try {
+
+
       const response = await fetch("http://localhost:8000", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, file_names }),
       });
       if (!response.ok) throw new Error("Could not connect to server...");
       const data = await response.json();
@@ -41,6 +50,12 @@ const chatSlice = createSlice({
   reducers: {
     addUserMessage: (state, action: PayloadAction<string>) => {
       state.messages.push({ role: "user", text: action.payload });
+    },
+    addFileName: (state, action: PayloadAction<string>) => {
+      state.file_names.push(action.payload);
+    },
+    removeFileName: (state, action: PayloadAction<string>) => {
+      state.file_names = state.file_names.filter((name) => name !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -63,5 +78,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addUserMessage } = chatSlice.actions;
+export const { addUserMessage, addFileName, removeFileName } = chatSlice.actions;
 export default chatSlice.reducer;

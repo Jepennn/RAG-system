@@ -1,17 +1,16 @@
 import { addUserMessage, sendMessage } from "@/lib/slices/chatSlice";
 import { AppDispatch, RootState } from "@/lib/store";
-
+import { removeFileName } from "@/lib/slices/chatSlice";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FileText, Loader2, X, File } from "lucide-react";
-import { deleteFile } from "@/lib/slices/filesSlice";
 import { toast } from "sonner";
 
 export function Chatbox() {
   const dispatch = useDispatch<AppDispatch>();
 
   const { isLoading } = useSelector((state: RootState) => state.chat);
-  const { items: files } = useSelector((state: RootState) => state.files);
+  const { file_names } = useSelector((state: RootState) => state.chat);
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = async () => {
@@ -19,24 +18,33 @@ export function Chatbox() {
     const textToSend = inputValue;
     dispatch(addUserMessage(textToSend));
     setInputValue("");
-    dispatch(sendMessage(textToSend));
+    dispatch(sendMessage({ text: textToSend, file_names }));
   };
 
-  async function handleDelete(file: string) {
+  // Remove file from context
+  async function handleRemoveFile(file: string) {
     try {
-      await dispatch(deleteFile(file)).unwrap();
-      toast.success(`${file} deleted`);
+      dispatch(removeFileName(file));
     } catch (error) {
-      toast.error("Failed deleting file");
+      toast.error("Failed removing file from context");
     }
   }
 
   return (
     <div className="p-4 pb-8 bg-zinc-900">
       <div className="max-w-2xl w-full mx-auto flex flex-col gap-3">
-        {files.length > 0 && (
+        {file_names.length <= 0 && (
           <div className="flex flex-wrap gap-2 px-1">
-            {files.map((file) => (
+            <div className="flex items-center gap-2 bg-zinc-800/50 border border-zinc-700/50 text-zinc-300 rounded-lg px-3.5 py-1.5 text-xs hover:bg-zinc-800 transition-colors group">
+              <File size={14} className="text-zinc-500" />
+              <span className="truncate max-w-[150px]">All files</span>
+            </div>
+          </div>
+        )}
+
+        {file_names.length > 0 && (
+          <div className="flex flex-wrap gap-2 px-1">
+            {file_names.map((file) => (
               <div
                 key={file}
                 className="flex items-center gap-2 bg-zinc-800/50 border border-zinc-700/50 text-zinc-300 rounded-lg px-2.5 py-1.5 text-xs hover:bg-zinc-800 transition-colors group"
@@ -44,7 +52,7 @@ export function Chatbox() {
                 <File size={14} className="text-zinc-500" />
                 <span className="truncate max-w-[150px]">{file}</span>
                 <button
-                  onClick={() => handleDelete(file)}
+                  onClick={() => handleRemoveFile(file)}
                   className="ml-1 p-0.5 rounded-md hover:bg-zinc-700 text-zinc-500 hover:text-red-400 transition-all"
                 >
                   <X size={12} />

@@ -1,11 +1,9 @@
 "use client";
 
-import FilesPage from "@/components/upload";
-
-import { MessageSquare, Command } from "lucide-react";
+import Upload from "@/components/upload";
+import { MessageSquare, Command, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { FileList } from "./file-list";
 
 import {
@@ -72,7 +70,7 @@ export function AppSidebar() {
             <SidebarGroupLabel>Upload</SidebarGroupLabel>
             <SidebarGroupContent>
               <div className="w-[220px]">
-                <FilesPage></FilesPage>
+                <Upload></Upload>
               </div>
             </SidebarGroupContent>
           </SidebarGroup>
