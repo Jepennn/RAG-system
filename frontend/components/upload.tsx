@@ -108,7 +108,7 @@ export default function Upload() {
                   File: {file.name}
                 </span>
               ) : (
-                "Release a .txt file here, or click to select"
+                "Release a .txt or .pdf file here, or click to select"
               )}
             </p>
           </div>
