@@ -95,7 +95,7 @@ export default function Upload() {
           {/* NYTT: Inputen är nu gömd men triggas av boxen ovan */}
           <Input
             type="file"
-            accept=".txt"
+            accept=".txt, .pdf"
             onChange={handleFileChange}
             ref={fileInputRef}
             className="hidden"

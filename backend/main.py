@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from google import genai
 from dotenv import load_dotenv
 from pinecone import Pinecone
+import pdfplumber
+import io
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -38,8 +40,28 @@ index = pc.Index("test-text-file")
 async def upload_document(file: UploadFile = File(...)):
 
     content = await file.read()
-    text = content.decode("utf-8")
-    chunks = text_splitter.split_text(text)
+    extracted_text = ""
+
+    # Kolla filändelse eller content_type
+    if file.filename.endswith(".pdf"):
+        # Logik för PDF
+        with pdfplumber.open(io.BytesIO(content)) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text:
+                    extracted_text += text + "\n"
+                    
+    elif file.filename.endswith(".txt"):
+        # Logik för vanlig textfil
+        # Vi avkodar bytes till en sträng (vanligtvis utf-8)
+        extracted_text = content.decode("utf-8")
+
+
+
+
+   
+   
+    chunks = text_splitter.split_text(extracted_text)
 
     embeddings = pc.inference.embed(
         model = EMBED_MODEL,
@@ -77,7 +99,7 @@ async def chat_endpoint(query: ChatMessage):
     )
 
     # Query from specfic files in pinecone
-    if (query.file_names.length > 0):
+    if len(query.file_names) > 0:
         result = index.query(
             vector=query_embeddings[0].values,
             top_k=5,
