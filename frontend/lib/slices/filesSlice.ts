@@ -14,9 +14,11 @@ const initialState: FilesState = {
   uploading: false,
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 //Thunk to fetchfiles
 export const fetchFiles = createAsyncThunk("files/fetchFiles", async () => {
-  const response = await fetch("http://localhost:8000/files");
+  const response = await fetch(`${API_URL}/files`);
   const data = await response.json();
   return data.files || [];
 });
@@ -25,7 +27,7 @@ export const fetchFiles = createAsyncThunk("files/fetchFiles", async () => {
 export const deleteFile = createAsyncThunk(
   "files/deleteFile",
   async (fileName: string) => {
-    const response = await fetch(`http://localhost:8000/files/${fileName}`, {
+    const response = await fetch(`${API_URL}/files/${fileName}`, {
       method: "DELETE",
     });
     if (!response.ok) throw new Error("Failed deleting file");
@@ -37,7 +39,7 @@ export const deleteFile = createAsyncThunk(
 export const deleteAllFiles = createAsyncThunk(
   "files/deleteAllFiles",
   async () => {
-    const response = await fetch("http://localhost:8000/files", {
+    const response = await fetch(`${API_URL}/files`, {
       method: "DELETE",
     });
     if (!response.ok) throw new Error("Failed deleting all files");

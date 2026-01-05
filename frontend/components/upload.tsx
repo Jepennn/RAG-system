@@ -9,6 +9,8 @@ import { AppDispatch } from "@/lib/store";
 import { addFile } from "@/lib/slices/filesSlice";
 
 export default function Upload() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -57,7 +59,7 @@ export default function Upload() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/upload", {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -87,9 +89,7 @@ export default function Upload() {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()} // Gör att hela boxen går att klicka på
           className={`w-full max-w-lg border-2 border-dashed p-12 rounded-xl text-center transition-all cursor-pointer ${
-            isDragging
-              ? "border-blue-500 bg-blue-500/10"
-              : "border-zinc-300 hover:bg-zinc-800"
+            isDragging ? "border-blue-500 bg-blue-500/10" : "border-zinc-300 hover:bg-zinc-800"
           }`}
         >
           {/* NYTT: Inputen är nu gömd men triggas av boxen ovan */}
@@ -104,9 +104,7 @@ export default function Upload() {
           <div className="space-y-4">
             <p className="text-white">
               {file ? (
-                <span className="text-blue-400 font-medium">
-                  File: {file.name}
-                </span>
+                <span className="text-blue-400 font-medium">File: {file.name}</span>
               ) : (
                 "Release a .txt or .pdf file here, or click to select"
               )}

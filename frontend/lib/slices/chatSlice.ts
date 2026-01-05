@@ -24,13 +24,13 @@ const initialState: ChatState = {
   file_names: [],
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export const sendMessage = createAsyncThunk<string, SendMessagePayload>(
   "chat/sendMessage",
   async ({ text, file_names }, { rejectWithValue }) => {
     try {
-
-
-      const response = await fetch("http://localhost:8000", {
+      const response = await fetch(`${API_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, file_names }),
