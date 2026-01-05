@@ -7,15 +7,12 @@ from dotenv import load_dotenv
 from pinecone import Pinecone
 import pdfplumber
 import io
-
+from fastapi import UploadFile, File
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 load_dotenv()
-
-
 gemini_client = genai.Client()
-
 app = FastAPI()
 
 app.add_middleware(
@@ -26,7 +23,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from fastapi import UploadFile, File
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
@@ -199,3 +195,10 @@ async def delete_file(file_name: str):
         print(f"Delete error: {e}")
         return {"status": "Error", "message": str(e)}
 
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)

@@ -66,8 +66,10 @@ jobs:
         with:
           service: "${{ env.SERVICE }}"
           region: "${{ env.REGION }}"
-          # NOTE: If using a different source folder, update the image name below:
           source: "./backend"
+          env_vars: |
+            PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
 
       # If required, use the Cloud Run URL output in later steps
       - name: "Show output"
