@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 from fastapi import UploadFile, File
-# kan lägga till separators o length_function
+
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
 EMBED_MODEL = "multilingual-e5-large"
@@ -42,9 +42,9 @@ async def upload_document(file: UploadFile = File(...)):
     content = await file.read()
     extracted_text = ""
 
-    # Kolla filändelse eller content_type
+
     if file.filename.endswith(".pdf"):
-        # Logik för PDF
+
         with pdfplumber.open(io.BytesIO(content)) as pdf:
             for page in pdf.pages:
                 text = page.extract_text()
@@ -52,8 +52,8 @@ async def upload_document(file: UploadFile = File(...)):
                     extracted_text += text + "\n"
                     
     elif file.filename.endswith(".txt"):
-        # Logik för vanlig textfil
-        # Vi avkodar bytes till en sträng (vanligtvis utf-8)
+
+
         extracted_text = content.decode("utf-8")
 
 
@@ -98,7 +98,7 @@ async def chat_endpoint(query: ChatMessage):
         parameters={"input_type": "query"}
     )
 
-    # Query from specfic files in pinecone
+
     if len(query.file_names) > 0:
         result = index.query(
             vector=query_embeddings[0].values,
@@ -137,7 +137,7 @@ async def chat_endpoint(query: ChatMessage):
     return {"reply": response.text}
 
 
-#
+
 @app.get("/files")
 async def get_files():
     try:
@@ -154,7 +154,7 @@ async def get_files():
         print(f"Error listing files: {e}")
         return {"files": [], "error": str(e)}
     
-# Deletes all files in the whole index
+
 @app.delete("/files")
 async def delete_all_files():
     try:
@@ -172,20 +172,20 @@ from fastapi import HTTPException
 @app.delete("/files/{file_name}")
 async def delete_file(file_name: str):
     try:
-        # 1. Hitta alla ID:n som börjar med filnamnet (t.ex. "shortest.txt_0", "shortest.txt_1")
-        # Vi använder index.list med prefix, vilket är väldigt effektivt.
+
+
         ids_to_delete = []
         for ids in index.list(prefix=f"{file_name}_"):
             ids_to_delete.extend(ids)
 
-        # 2. Om listan är tom, hittades ingen fil
+
         if not ids_to_delete:
             raise HTTPException(
                 status_code=404, 
                 detail=f"Hittade inga vektorer för filen '{file_name}'"
             )
 
-        # 3. Radera vektorerna baserat på deras specifika ID:n
+
         index.delete(ids=ids_to_delete)
         
         return {

@@ -21,7 +21,6 @@ export function Chatbox() {
     dispatch(sendMessage({ text: textToSend, file_names }));
   };
 
-  // Remove file from context
   async function handleRemoveFile(file: string) {
     try {
       dispatch(removeFileName(file));

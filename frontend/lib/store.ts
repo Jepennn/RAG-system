@@ -1,4 +1,3 @@
-// lib/store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import filesReducer from "./slices/filesSlice";
 import chatReducer from "./slices/chatSlice";

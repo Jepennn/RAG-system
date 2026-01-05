@@ -23,7 +23,6 @@ export const fetchFiles = createAsyncThunk("files/fetchFiles", async () => {
   return data.files || [];
 });
 
-//Thunk to delete a specfic file
 export const deleteFile = createAsyncThunk(
   "files/deleteFile",
   async (fileName: string) => {
@@ -31,11 +30,10 @@ export const deleteFile = createAsyncThunk(
       method: "DELETE",
     });
     if (!response.ok) throw new Error("Failed deleting file");
-    return fileName; // Vi returnerar filnamnet så vi kan ta bort det från state
+    return fileName;
   }
 );
 
-//Thunk to delete al files
 export const deleteAllFiles = createAsyncThunk(
   "files/deleteAllFiles",
   async () => {
@@ -57,7 +55,7 @@ const filesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Files
+
       .addCase(fetchFiles.pending, (state) => {
         state.loading = true;
       })
@@ -72,9 +70,8 @@ const filesSlice = createSlice({
         state.items = [];
         state.loading = false;
       })
-      // Delete File
+
       .addCase(deleteFile.fulfilled, (state, action) => {
-        // Här uppdaterar vi state direkt utan att ladda om sidan!
         state.items = state.items.filter((file) => file !== action.payload);
       });
   },

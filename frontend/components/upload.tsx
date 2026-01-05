@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react"; // NYTT: lade till useRef
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -16,9 +16,8 @@ export default function Upload() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // --- NYTT: State för att veta om man drar en fil över boxen ---
   const [isDragging, setIsDragging] = useState(false);
-  // --- NYTT: Referens för att kunna klicka på den dolda knappen ---
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,9 +26,8 @@ export default function Upload() {
     }
   };
 
-  // --- NYTT: Funktioner för Drag & Drop ---
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // Måste finnas för att drop ska fungera
+    e.preventDefault();
     setIsDragging(true);
   };
 
@@ -42,7 +40,6 @@ export default function Upload() {
     setIsDragging(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      // Sparar filen som droppades precis som om man valt den via knappen
       setFile(e.dataTransfer.files[0]);
     }
   };
@@ -82,17 +79,15 @@ export default function Upload() {
   return (
     <div className="flex flex-col bg-transparent text-white font-sans antialiased">
       <div className="flex justify-center">
-        {/* --- NYTT: Drop Zone Box --- */}
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()} // Gör att hela boxen går att klicka på
+          onClick={() => fileInputRef.current?.click()}
           className={`w-full max-w-lg border-2 border-dashed p-12 rounded-xl text-center transition-all cursor-pointer ${
             isDragging ? "border-blue-500 bg-blue-500/10" : "border-zinc-300 hover:bg-zinc-800"
           }`}
         >
-          {/* NYTT: Inputen är nu gömd men triggas av boxen ovan */}
           <Input
             type="file"
             accept=".txt, .pdf"
@@ -114,7 +109,7 @@ export default function Upload() {
           {file && (
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Hindrar att "klicka på boxen" triggas när man klickar på knappen
+                e.stopPropagation();
                 uploadFile();
               }}
               disabled={!file || uploading}
