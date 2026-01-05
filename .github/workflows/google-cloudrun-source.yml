@@ -32,6 +32,7 @@ name: "Deploy to Cloud Run from Source"
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 env:
   PROJECT_ID: "id1214" # TODO: update to your Google Cloud project ID
