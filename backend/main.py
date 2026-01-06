@@ -114,16 +114,18 @@ async def chat_endpoint(query: ChatMessage):
     context = "\n-----------\n".join([f"Källa: {res.metadata['filename']}\nText: {res.metadata['text']}" for res in result.matches])
 
     prompt = f"""
-    Detta är dina instruktioner:
-    -Använd den markerade kontexten nedan som bakgrund till dina svar. Om du inte kan svara med hjälp av kontexten, förklara det på ett vänligt sätt.
-    -Om användaren säger hej eller andra vardagliga fraser, svara vänligt.
-    -Du kan se i kontexten vilken källa den kommer ifrån. Du ska ange i dina svar vart du fick en viss information ifrån, skriv källan inom parenteser.
-    -Du ska ange vilken källa du fick informationen ifrån! Ange källan inom parenteser!
+            You are a helpful and professional assistant. Use the provided context below to answer the user's question.
 
-    Kontext: {context}
+            Guidelines:
+            1. **Context-Based Answers:** Base your answers strictly on the provided context. If the information is not available in the context, politely inform the user that you do not have enough information to answer.
+            2. **Citations:** You must cite your sources. Every time you provide information from the context, include the source name in parentheses, for example: (Source Name).
+            3. **Tone:** Maintain a friendly and helpful tone. Respond warmly to greetings and general pleasantries.
+            4. **Accuracy:** Do not use outside knowledge or make up information that is not present in the text.
 
-    Fråga: {query.text}
-    """
+            Context: {context}
+
+            Question: {query.text}
+            """
     print(prompt)
     
     response = gemini_client.models.generate_content(
