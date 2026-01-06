@@ -17,7 +17,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://rag-system-sandy.vercel.app","http://localhost:3000"],
+    allow_origins=["https://rag-system-sandy.vercel.app", "https://id1214.jesperhesselgren.dev/", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
