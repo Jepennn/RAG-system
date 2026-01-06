@@ -6,7 +6,7 @@ This is a Retrieval-Augmented Generation (RAG) system that uses Gemini and Pinec
 
 ## 🌐 Try the project live
 
-👉 [https://rag-system-sandy.vercel.app/](https://rag-system-sandy.vercel.app/)
+👉 [https://id1214.jesperhesselgren.dev/](https://id1214.jesperhesselgren.dev/)
 
 ---
 
